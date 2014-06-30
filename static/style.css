@@ -1,0 +1,344 @@
+/*
+ * Copyright (c) 2014 Carl Burch
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+body {
+    padding: 0;
+    margin: 0;
+}
+
+div#toolbar {
+    position: fixed;
+    height: 40px;
+    background: #dad;
+    color: #505;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    z-index: 50;
+    border-bottom: 3px solid #505;
+}
+
+div#toolbar h1 {
+    float: left;
+    margin: 0;
+    padding: 2pt 10pt;
+}
+
+ul#tab_list {
+    display: table;
+    table-layout: fixed;
+    float: right;
+    padding-right: 0.5em;
+}
+
+ul#tab_list li {
+    display: table-cell;
+    padding: 0pt 0.5em;
+}
+
+ul#tab_list a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.tab_for_editor {
+    display: none;
+}
+
+.page {
+    display: none;
+}
+
+div#body {
+    padding: 40pt 10pt 10pt 10pt;
+}
+
+div#body h1 {
+    margin: 0.1em 0pt 0.2em 0pt;
+    font-size: 150%;
+    color: #505;
+}
+
+td.form_colspan {
+    text-align: center;
+}
+
+ul.lesson_list {
+    list-style-type: none;
+    padding: 0;
+    margin-left: 0;
+    font-weight: bold;
+}
+
+a.lesson_href {
+    text-decoration: none;
+    color: #505;
+}
+
+a.lesson_hidden {
+    color: gray;
+}
+
+div.prob {
+    position: relative;
+    border-width: 3px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 0.5em 0pt;
+    padding: 0;
+}
+
+div.prob_stmt {
+    padding: 0.5em;
+}
+
+div.prob_header {
+    display: block;
+    font-size: 120%;
+    font-weight: bold;
+    padding-bottom: 0.2em;
+}
+
+div.prob textarea {
+    display: block;
+    border-width: 1px;
+    border-style: solid;
+    width: 100%;
+    height: 10em;
+}
+
+div.prob .CodeMirror {
+    border-width: 1px;
+    border-style: solid;
+    margin-bottom: 0.2em;
+}
+
+div.prob_result {
+    display: none;
+    border-top-width: 3px;
+    border-top-style: solid;
+    padding: 0.5em;
+}
+
+div.prob_grade {
+    border-top-width: 3px;
+    border-top-style: solid;
+    padding: 0.5em;
+}
+
+div.prob_grade p {
+    margin: 0 0.2em;
+}
+
+div.prob_grade span.prob_grade_grade {
+    font-weight: bold;
+}
+
+div.prob_grade_unknown {
+    display: none;
+}
+
+div.prob_grade_known {
+    display: block;
+}
+
+div.prob_unknown {
+    border-color: #660;
+    background: #ffb;
+}
+
+div.prob_unknown span.prob_title {
+    color: #440;
+}
+
+div.prob_unknown textarea {
+    border-color: #660;
+}
+
+div.prob_unknown .CodeMirror {
+    border-color: #660;
+}
+
+div.prob_unknown div.prob_result {
+    border-top-color: #660;
+}
+
+div.prob_unknown div.prob_grade {
+    border-top-color: #660;
+}
+
+div.prob_correct {
+    border-color: #070;
+    background: #bfb;
+}
+
+div.prob_correct span.prob_title {
+    color: #050;
+}
+
+div.prob_correct textarea {
+    border-color: #070;
+}
+
+div.prob_correct .CodeMirror {
+    border-color: #070;
+}
+
+div.prob_correct div.prob_result {
+    border-top-color: #070;
+}
+
+div.prob_correct div.prob_grade {
+    border-top-color: #070;
+}
+
+div.prob_graded {
+    border-color: #700;
+    background: #fee;
+}
+
+div.prob_graded span.prob_title {
+    color: #500;
+}
+
+div.prob_graded .CodeMirror {
+    border-color: #700;
+}
+
+div.prob_graded textarea {
+    border-color: #700;
+}
+
+div.prob_graded div.prob_result {
+    border-top-color: #700;
+}
+
+div.prob_graded div.prob_grade {
+    border-top-color: #700;
+}
+
+div.prob_result p {
+    margin: 0.2em 0;
+}
+
+div.prob_warn p {
+    margin: 0.1em 0;
+}
+
+tr.row_correct {
+    display: none;
+}
+
+td.ex_header {
+    vertical-align: top
+}
+
+img.autosave_warn {
+    width: 1em;
+    height: 1em;
+}
+
+img.verdict_icon {
+    width: 1em;
+    height: 1em;
+}
+
+td.stat_verdict {
+    text-align: center;
+    width: 1em;
+}
+
+td.stat_total {
+    text-align: center;
+    width: 1em;
+}
+
+div.soln {
+    margin-left: 2em
+}
+
+div.soln div.soln_name {
+    margin-left: -2em;
+    font-weight: bold;
+}
+
+div.soln div.soln_name span.login {
+    font-family: monospace;
+}
+
+div.soln div.soln_code {
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+div.soln div.soln_grade input.soln_grade_field {
+    width: 3em;
+    margin-right: 0.5em;
+    display: inline;
+    vertical-align: top;
+}
+
+div.soln div.soln_grade textarea.soln_rem_field {
+    width: 80%;
+    height: 5em;
+    display: inline;
+    vertical-align: top;
+}
+
+tr.gradelist_lesson {
+    font-size: 140%;
+    font-weight: bold;
+}
+
+td.gradelist_item {
+    padding-left: 3em;
+}
+
+td.gradelist_grade {
+    text-align: center;
+}
+
+textarea#workpad {
+    display: block;
+    border: 1px solid black;
+    width: 100%;
+    height: 10em;
+}
+
+#workpad_form .CodeMirror {
+    border-width: 1px;
+    border-style: solid;
+    margin-bottom: 0.2em;
+}
+
+table.user_list a { color: inherit; text-decoration: none }
+tr.user_invisible { color: #888; }
+
+div.history {
+    max-height: 75%;
+    overflow: auto;
+}
+
+div.history_code {
+    white-space: pre-wrap;
+    margin-left: 2em;
+}

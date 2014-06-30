@@ -1,0 +1,411 @@
+/*
+ * Copyright (c) 2014 Carl Burch
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+{&lessons}
+ <h1>Lessons</h1>{~n}
+
+ {?ok}
+  {?lessons}
+   <ul class="lesson_list">{~n}
+   {#lessons}
+    <li><a class="lesson_href {?visible}{:else}lesson_hidden{/visible}"
+           lesson="{lessonId}" href="#">{title|s}</a></li>{~n}
+   {/lessons}
+   </ul>{~n}
+  {:else}
+   <p>No lessons are posted.</p>{~n}
+  {/lessons}
+ {:else}
+  <p>{message}</p>{~n}
+ {/ok}
+{/lessons}
+
+{&lesson}
+ <h1 class="lessonId" lesson="{lessonId}">{?title}{title|s}{:else}Untitled Lesson{/title}</h1>{~n}
+ 
+ {?ok}
+  {?items}
+   {?editor}
+    <form>
+    <input type="checkbox" id="lessonStarts" name="lessonStarts"
+     {?started}checked="checked"{/started}>
+    <label for="lessonStarts">Published for others</label>
+    <p id="startsError" style="display: hidden"></p>
+    </form>
+   {/editor}
+
+   {#items}
+    {@select key="{type}"}
+     {@eq value="html"}
+      {html|s}{~n}
+     {/eq}
+     {@eq value="problem"}
+      <div item="{itemid}" class="prob {?grade}prob_graded{:else}prob_unknown{/grade}">{~n}
+       <div class="prob_stmt">{~n}
+        <form class="prob_form" item="{itemid}">{~n}
+         <div class="prob_header">
+          <span class="prob_title">{title|s}</span>
+          {?editor}
+           {~s}[<a href="#" class="href_grade">Grade</a>]
+          {/editor}
+         </div>{~n}
+         {html|s}{~n}
+         <textarea name="code">{code}</textarea>{~n}
+         <div class="prob_warn"></div>
+         <button type="submit">Execute</button>{~n}
+        </form>{~n}
+       </div>{~n}
+       <div class="prob_result"></div>{~n}
+       <div class="prob_grade {?grade}prob_grade_known{:else}{?comment}prob_grade_known{:else}prob_grade_unknown{/comment}{/grade}">{~n}
+        <p>Grade:{~s}
+         <span class="prob_grade_grade">
+          {?grade}{grade}{:else}??{/grade}
+         </span>.{~s}
+         {comment}</p>
+       </div>{~n}
+      </div>{~n}
+     {/eq}
+     {@default}
+       <p>[Unknown item type: {type}]</p>
+     {/default}
+    {/select}
+   {/items}
+   </ul>{~n}
+  {:else}
+   <p>(Lesson is empty.)</p>{~n}
+  {/items}
+
+  {?stats}
+   <h2>Statistics</h2>
+
+   <table rules="groups">
+    <colgroup span="1">
+    <colgroup span="{problemCount}">
+    <colgroup span="2">
+   <tbody>
+   {#stats}
+    <tr>
+     <td>{last}, {first}</td>
+     {#verdicts}
+      {@eq key="{.}" value="3"}
+       <td><img class="verdict_icon" src="/static/img/correct.png"></td>
+      {:else}
+       <td class="stat_verdict">{.}</td>
+      {/eq}
+     {/verdicts}
+     <td class="stat_total">{attempts}</td>
+     <td class="stat_total">{corrects}</td>
+    </tr>
+   {/stats}
+   </tbody></table>
+  {/stats}
+ {:else}
+  <p>{message}</p>{~n}
+ {/ok}
+{/lesson}
+
+{&results}
+ {?ok}
+  {@select key="{verdict}"}
+   {@eq value="-2"}
+    <p>Compile error in problem's definition.</p>
+    <p class="python_error">{message}</p>
+    {>testlist/}
+   {/eq}
+   {@eq value="-1"}
+    <p>Run-time error in problem's definition.{~s}
+    {@ne key="correct" value="0"}
+     [<a href="#" class="show_correct">Show all tests</a>]
+    {/ne}
+    </p>{~n}
+    {>testlist/}
+   {/eq}
+   {@eq value="0"}
+    <p>Error in compiling line {line}:</p>{~n}
+    <p class="python_error">{message}</p>
+   {/eq}
+   {@eq value="1"}
+    <p>Run-time error encountered.{~s}
+    {@ne key="correct" value="0"}
+     [<a href="#" class="show_correct">Show all tests</a>]
+    {/ne}
+    </p>{~n}
+    {>testlist/}
+   {/eq}
+   {@eq value="2"}
+    <p>Wrong answer for some tests.{~s}
+    {@ne key="correct" value="0"}
+     [<a href="#" class="show_correct">Show all tests</a>]
+    {/ne}
+    </p>{~n}
+    {>testlist/}
+   {/eq}
+   {@eq value="3"}
+    <p>All tests correct!{~s}
+    [<a href="#" class="show_correct">Show all tests</a>]
+    </p>{~n}
+    {>testlist/}
+   {/eq}
+   {@eq value="10"}
+    <p>Program compiles. (Problem does not specify any testing.)</p>{~n}
+   {/eq}
+   {@default}
+    <p>Unknown verdict ({verdict}).</p>
+    {>testlist/}
+   {/default}
+  {/select}
+ {:else}
+  <p>{message}</p>{~n}
+ {/ok}
+{/results}
+
+{&testlist}
+{?tests}
+ <table><tbody>{~n}
+  {#tests}
+   <tr>
+    {@eq key="{verdict}" value="3"}
+     <td><img class="verdict_icon" src="/static/img/correct.png"></td>
+    {:else}
+     <td><img class="verdict_icon" src="/static/img/wrong.png"></td>
+    {/eq}
+    <td>Test {@math key="{$idx}" method="add" operand="1"/}.</td><td>
+     {@select key="{verdict}"}
+      {@eq value="-1"}
+       Problem specification error.
+      {/eq}
+      {@eq value="1"}
+       Run-time error.
+      {/eq}
+      {@eq value="2"}
+       Wrong answer ({message}).
+      {/eq}
+      {@eq value="3"}
+       Correct!
+      {/eq}
+      {@default}
+       Unknown verdict ({verdict}).
+      {/default}
+     {/select}
+    </td></tr>{~n}
+    {@eq key="{verdict}" value="3"}
+     <tr class="row_correct">
+    {:else}
+     <tr>
+    {/eq}
+    <td></td><td></td>
+     <td class="ex_header">Input:</td>
+     <td><code>{test|nlbr|nbsp|s}</code></td>
+     </tr>{~n}
+    {@select key="{verdict}"}
+     {@eq value="-1"}
+      <tr><td></td><td></td>
+       <td class="ex_header">Message:</td>
+       <td><code>{message|nlbr|s}</code></td>
+      </tr>{~n}
+     {/eq}
+     {@eq value="1"}
+      <tr><td></td><td></td>
+       <td class="ex_header">Message:</td>
+       <td><code>{message|nlbr|s}</code></td>
+      </tr>{~n}
+     {/eq}
+     {@eq value="3"}
+      <tr class="row_correct"><td></td><td></td>
+       <td class="ex_header">Your result:</td>
+       <td><code>{result|nlbr|nbsp|s}</code></td>
+      </tr>{~n}
+     {/eq}
+     {@default}
+      <tr><td></td><td></td>
+       <td class="ex_header">Your result:</td>
+       <td><code>{result|nlbr|nbsp|s}</code></td>
+      </tr>{~n}
+      <tr><td></td><td></td>
+       <td class="ex_header">Expected:</td>
+       <td><code>{solution|nlbr|nbsp|s}</code></td>
+      </tr>{~n}
+     {/default}
+    {/select}
+  {/tests}
+ </tbody></table>{~n}
+{:else}
+ <p>No tests completed.</p>{~n}
+{/tests}
+{/testlist}
+
+{&grade}
+ <h1 id="grade_title" item="{itemid}">{title|s}</h1>
+
+ <p>[<a href="#" lesson="{lessonid}" class="lesson_href">Back to lesson</a>]</p>
+
+ <p><input name="grade_show" id="grade_show" type="checkbox"
+  {?showGrades}{~s}checked="checked"{/showGrades} >
+  <label for="grade_show">Publish grades</label></p>
+
+ <h2>Solutions</h2>
+
+ {?solns}
+  {#solns}
+   <div class="soln" id="soln{id}" user="{id}">
+    <div class="soln_name">{last}, {first} (<span class="login">{login}</span>)</div>
+    <div class="soln_code">{code}</div>
+    <div class="soln_verdict">
+     Verdict:{~s}
+     {@select key="{verdict}"}
+      {@eq value="-2"}
+       Compile error in problem's definition.
+      {/eq}
+      {@eq value="-1"}
+       Run-time error in problem's definition.
+      {/eq}
+      {@eq value="0"}
+       Compile error.
+      {/eq}
+      {@eq value="1"}
+       Run-time error.
+      {/eq}
+      {@eq value="2"}
+       Wrong answer for some tests.
+      {/eq}
+      {@eq value="3"}
+       All tests correct!
+      {/eq}
+      {@eq value="10"}
+       Program compiles. (Problem does not test.)
+      {/eq}
+      {@default}
+       Unknown verdict ({verdict}).
+      {/default}
+     {/select}
+     {~s}{?verdictCurrent}(current){:else}(outdated){/verdictCurrent}
+    </div>
+    <div class="soln_grade">
+     <input maxlength="4" id="grade{id}" class="soln_grade_field" value="{grade}">
+     <textarea id="rem{id}" class="soln_rem_field">{comment}</textarea>
+    </div>
+    <div class="soln_buttons">
+     <button class="soln_workpad">To workpad</button>
+     <button class="soln_show_history">Show history</button>
+     {~s} Last edit: {time}
+    </div>
+    <div class="soln_history"></div>
+   </div>
+  {/solns}
+ {:else}
+  <p>No solutions to grade!</p>
+ {/solns}
+
+ <h2>Workpad</h2>
+
+ <form id="workpad_form" item="{itemid}">{~n}
+  <input type="hidden" id="workpad_user" value="">{~n}
+  <textarea id="workpad" name="workpad"></textarea>{~n}
+  <div class="workpad_warn"></div>
+  <button type="submit">Execute</button>
+  <button id="workpad_return">Return to User</button>
+  {~n}
+ </form>{~n}
+ <div class="workpad_result"></div>{~n}
+{/grade}
+
+{&gradelist}
+ {?ok}
+  <h1>Grades for {first} {last} ({login})</h1>
+
+  {?grades}
+   <table><thead>
+    <tr>
+     <td class="gradelist_item">exercise</td>
+     <td class="gradelist_grade">grade</td>
+     <td>comment</td>
+    </tr>
+   <tbody>
+    {#grades}
+     {?lessonId}
+      <tr class="gradelist_lesson"><td colspan="3">
+       <a class="lesson_href" lesson="{lessonId}" href="#">{lessonTitle}</a>
+      </td></tr>
+     {/lessonId}
+     <tr>
+      <td class="gradelist_item">{title|s}</td>
+      <td class="gradelist_grade">{grade}</td>
+      <td>
+       {?commentMulti}
+        (Comment on lesson page)
+       {:else}
+        {comment}
+       {/commentMulti}
+      </td>
+     </tr>
+    {/grades}
+   </tbody></table>
+  {:else}
+   <p>(No grades in database.)</p>
+  {/grades}
+ {:else}
+  <h1>Grades unavailable</h1>
+
+  <p>{message}
+ {/ok}
+{/gradelist}
+
+{&soln_history}
+ {?ok}
+  {?results}
+   <div class="history">{~n}
+   {#results}
+    <div class="history_time">{time}</div>{~n}
+    <div class="history_code">{code}</div>{~n}
+   {/results}
+   </div>{~n}
+  {:else}
+   <p>Nothing saved in history.</p>{~n}
+  {/results}
+ {:else}
+  <p>{message}</p>{~n}
+ {/ok}
+{/soln_history}
+
+{&users}
+ <h1>Users</h1>{~n}
+
+ {?ok}
+  {?users}
+   <table class="user_list">{~n}
+   {#users}
+    <tr class="{?visible}{:else}user_invisible{/visible}">
+     <td>[<a class="user_grades" id="{userId}" href="#">Grades</a>]</td>{~n}
+     <td>[<a class="user_toggle" id="{userId}"
+      href="#">{?visible}Hide{:else}Show{/visible}</a>]</td>{~n}
+     <td><a class="user_profile" id="{userId}" href="#">{last}, {first}{~s}
+      (<span class="user_login">{login}</span>)</a></td>{~n}
+    </tr>
+   {/users}
+   </ul>{~n}
+  {:else}
+   <p>No users in system.</p>{~n}
+  {/users}
+ {:else}
+  <p>{message}</p>{~n}
+ {/ok}
+{/users}

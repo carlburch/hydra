@@ -1,0 +1,101 @@
+/*
+ * Copyright (c) 2014 Carl Burch
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+var dust = require('dustjs-linkedin');
+var fs = require('fs');
+
+function compileDustFile(filename, receiver) {
+    var fin = fs.createReadStream(filename);
+    var finText = '';
+    fin.on('data', function (chunk) {
+        finText += chunk;
+    });
+    fin.on('end', function () {
+        var template_list = finText.split('<template');
+        console.log('compiling templates: ', template_list.length);
+        var to_do = [];
+        var contents = '';
+        template_list.forEach(function (code, tempIndex) {
+            var gt = code.indexOf('>');
+            if (gt < 0) {
+                if (code.trim() !== '') {
+                    console.log('  invalid template found');
+                }
+                return;
+            }
+            var key = code.substring(0, gt).trim();
+            var value = code.substring(gt + 1).trim();
+            if (value.substring(value.length - 10) === '</template>') {
+                value = value.substring(0, value.length - 11).trim();
+            }
+            console.log('  compiling ' + key);
+            var compiled = dust.compile(value, key);
+            if (tempIndex > 0) {
+                contents += '\n' + compiled;
+            } else {
+                contents += compiled;
+            }
+        });
+        receiver(contents);
+    });
+}
+
+
+function middleware(filename, isModifiable) {
+    var contents = '';
+
+    var lastCheck = new Date();
+    var lastModify = null;
+
+    return function (req, res, next) {
+        if (!isModifiable && lastModify !== null) {
+            res.send(contents);
+            return;
+        }
+        var now = new Date();
+        var elapse = now - lastCheck;
+        if (elapse < 1000 && lastModify !== null) {
+            res.send(contents);
+            return;
+        }
+        lastCheck = now;
+        fs.stat(filename, function (err, stats) {
+            if (err !== null) {
+                console.log('could not find dust template', filename);
+                res.send('');
+                return;
+            }
+            var oldContents = contents;
+            if (lastModify === null || stats.mtime > lastModify) {
+                lastModify = stats.mtime;
+                compileDustFile(filename, function (compiled) {
+                    contents = compiled;
+                    res.send(contents);
+                });
+            } else {
+                res.send(oldContents);
+            }
+        });
+    }
+};
+
+exports.middleware = middleware;

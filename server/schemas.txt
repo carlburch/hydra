@@ -1,0 +1,91 @@
+/*
+ * Copyright (c) 2014 Carl Burch
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+CREATE TABLE users (
+  userid      INT PRIMARY KEY,
+  course      TINYTEXT NOT NULL,
+  login       TINYTEXT NOT NULL,
+  password    TINYTEXT NOT NULL,
+  email       TINYTEXT,
+  firstname   TINYTEXT,
+  lastname    TINYTEXT,
+  editor      BOOLEAN DEFAULT 0,
+  visible     BOOLEAN DEFAULT 1,
+  UNIQUE (course, userid)
+);
+
+CREATE INDEX users_userid ON users (course, userid);
+
+CREATE TABLE sessions (
+  sessionid   INT PRIMARY KEY,
+  userid      INT,
+  expires     TIMESTAMP
+);
+
+CREATE TABLE problems (
+  course      TINYTEXT,
+  lessonid    TINYTEXT,
+  probid      TINYTEXT,
+  showgrades  INT DEFAULT 0,
+  starts      TIMESTAMP DEFAULT (DATETIME('now', 'utc')),
+  PRIMARY KEY (course, lessonid, probid)
+);
+
+CREATE TABLE submissions (
+  userid      INT,
+  lessonid    TINYTEXT,
+  probid      TINYTEXT,
+  time        TIMESTAMP DEFAULT (DATETIME('now', 'utc')),
+  code        TEXT,
+  verdict     INT, -- 0 = not attempted, 1 = compile error, 2 = run-time error, 3 = unmatched output, 4 = all tests pass
+  PRIMARY KEY (userid, lessonid, probid, time)
+);
+
+CREATE TABLE solutions (
+  userid      INT,
+  lessonid    TINYTEXT,
+  probid      TINYTEXT,
+  time        TIMESTAMP DEFAULT (DATETIME('now', 'utc')),
+  code        TEXT,
+  PRIMARY KEY (userid, lessonid, probid)
+);
+
+CREATE TABLE late_solutions (
+  userid      INT,
+  lessonid    TINYTEXT,
+  probid      TINYTEXT,
+  time        TIMESTAMP DEFAULT (DATETIME('now', 'utc')),
+  code        TEXT,
+  PRIMARY KEY (userid, lessonid, probid)
+);
+
+CREATE TABLE grades (
+  userid      INT,
+  lessonid    TINYTEXT,
+  probid      TINYTEXT,
+  time        TIMESTAMP DEFAULT (DATETIME('now', 'utc')),
+  teacherid   INT,
+  code        TEXT,
+  grade       CHAR(4),
+  comment     TEXT,
+  PRIMARY KEY (userid, lessonid, probid)
+);

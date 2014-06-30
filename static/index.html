@@ -1,0 +1,140 @@
+/*
+ * Copyright (c) 2014 Carl Burch
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Hydra</title>
+<link rel="stylesheet" href="/static/lib/jquery-ui/css/overcast/jquery-ui-1.10.4.custom.min.css">
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/lib/codemirror.css">
+</head>
+<body>
+<div id="toolbar">
+<h1>Hydra</h1>
+<ul id="tab_list">
+<li><a id="tab_lessons" href="#">Lessons</a></li>
+<li><a id="tab_gradelist" href="#">Grades</a></li>
+<li class="show_for_editor"><a id="tab_users" href="#">Users</a></li>
+<!-- <li><a id="tab_profile" href="#">Profile</a></li> -->
+<li><a id="tab_logout" href="#">Log Out</a></li>
+</ul>
+</div>
+<div id="body">
+
+<form class="page" id="register">
+<table><tbody>
+<tr><td class="form_colspan" colspan="2"><a id="tab_login" href="#">Log in to current account</a></td></tr>
+<tr><td><label for="register_login">Login ID:</label></td>
+    <td><input id="register_login" name="register_login"></td></tr>
+<tr><td><label for="register_password">Password:</label></td>
+    <td><input type="password" id="register_password" name="register_password"></td></tr>
+<tr><td><label for="register_password2">Password Again:</label></td>
+    <td><input type="password" id="register_password2" name="register_password2"></td></tr>
+<tr><td><label for="register_first">First Name:</label></td>
+    <td><input id="register_first" name="register_first"></td></tr>
+<tr><td><label for="register_last">Last Name:</label></td>
+    <td><input id="register_last" name="register_last"></td></tr>
+<tr><td><label for="register_email">E-mail Address:</label></td>
+    <td><input id="register_email" name="register_email"></td></tr>
+<tr><td class="form_colspan" colspan="2"><button type="submit">Register</button></td></tr>
+<tr><td class="form_colspan" colspan="2"><span id="register_err"></span></td></tr>
+</tbody></table>
+</form>
+
+<form class="page" id="login">
+<table><tbody>
+<tr><td class="form_colspan" colspan="2"><a id="tab_register" href="#">Create new account</a></td></tr>
+<tr><td><label for="login_login">Login ID:</label></td>
+    <td><input id="login_login" name="login_login"></td></tr>
+<tr><td><label for="login_password">Password:</label></td>
+    <td><input type="password" id="login_password" name="login_password"></td></tr>
+<tr><td class="form_colspan" colspan="2"><button type="submit">Log In</button></td></tr>
+<tr><td class="form_colspan" colspan="2"><span id="login_err"></span></td></tr>
+</tbody></table>
+</form>
+
+<div class="page" id="lessons">
+<h1>Lessons</h1>
+</div>
+
+<div class="page" id="lesson"></div>
+
+<div class="page" id="grade"></div>
+
+<div class="page" id="gradelist"></div>
+
+<div class="page" id="users"></div>
+
+<div class="page" id="profile">
+
+<h1>User profile (<tt><span id="profile_login"></span></tt>)</h1>
+
+<form id="profile_passwd">
+<table><tbody>
+<tr><td><label for="profile_passwd_old">Current Password:</label></td>
+    <td><input type="password" id="profile_passwd_old" name="profile_passwd_old"></td></tr>
+<tr><td><label for="profile_passwd_new1">New Password:</label></td>
+    <td><input type="password" id="profile_passwd_new1" name="profile_passwd_new1"></td></tr>
+<tr><td><label for="profile_passwd_new2">New Password Again:</label></td>
+    <td><input type="password" id="profile_passwd_new2" name="profile_passwd_new2"></td></tr>
+<tr><td class="form_colspan" colspan="2"><button type="submit">Change Password</button></td></tr>
+</tbody></table>
+</form>
+
+<form id="profile_update">
+<input type="hidden" id="profile_id" value="">
+<table><tbody>
+<tr><td><label for="profile_first">First Name:</label></td>
+    <td><input id="profile_first" name="profile_first"></td></tr>
+<tr><td><label for="profile_last">Last Name:</label></td>
+    <td><input id="profile_last" name="profile_last"></td></tr>
+<tr><td><label for="profile_email">E-Mail Address:</label></td>
+    <td><input id="profile_email" name="profile_email"></td></tr>
+<tr><td class="form_colspan" colspan="2"><button type="submit">Update</button></td></tr>
+<tr><td class="form_colspan" colspan="2"><span id="profile_err"></span></td></tr>
+</tbody></table>
+</form>
+
+</div>
+
+<div class="page" id="logout">
+<p>You have logged out.</p>
+</div>
+
+</div>
+<script src="/static/lib/jquery-1.10.2.js"></script>
+<script src="/static/lib/jquery-ui/js/jquery-ui-1.10.4.custom.min.js"></script>
+<script src="/static/lib/dust-core.js"></script>
+<script src="/static/lib/dust-helpers-1.1.1.js"></script>
+<script src="/static/lib/jquery.history.js"></script>
+<script src="/static/lib/codemirror.js"></script>
+<script src="/static/lib/python.js"></script>
+
+<script src="/template/templates.js"></script>
+<script src="/static/main.js"></script>
+<script src="/static/lesson.js"></script>
+<script src="/static/user.js"></script>
+<script src="/static/grade.js"></script>
+</body>
+</html>
